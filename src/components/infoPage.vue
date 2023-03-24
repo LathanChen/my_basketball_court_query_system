@@ -32,7 +32,7 @@
           地点
         </div>
       </template>
-    {{ item.name }}
+    {{ item.court_name }}
     </el-descriptions-item>
     <el-descriptions-item>
       <template #label>

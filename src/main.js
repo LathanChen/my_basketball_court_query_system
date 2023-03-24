@@ -4,13 +4,15 @@ import ElementPlus from 'element-plus'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import VueAxios from 'vue-axios'
 import axios from 'axios'
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory  } from 'vue-router'
 import 'element-plus/theme-chalk/index.css'
 // 修改element组件为中文
 import locale from 'element-plus/lib/locale/lang/zh-cn'
 import indexPage from './components/indexPage.vue'
 import infoPage from './components/infoPage.vue'
 import HelloWorld from './components/HelloWorld.vue'
+import adminLogin from './components/adminLogin.vue'
+import inputInfo from './components/inputInfo.vue'
 import { createStore } from 'vuex'
 // 设置反向代理，前端请求默认发送到 http://localhost:8081
 axios.defaults.baseURL = 'http://localhost:8081'
@@ -34,7 +36,17 @@ const router = createRouter({
         path: '/infoPage',
         name: 'infoPage',
         component: infoPage
-      }
+      },
+      {
+        path: '/adminLogin',
+        name: 'adminLogin',
+        component: adminLogin
+      },
+      {
+        path: '/inputInfo',
+        name: 'inputInfo',
+        component: inputInfo
+        }
     ]
   })
 // 创建VueX仓库store实例

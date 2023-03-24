@@ -1,9 +1,12 @@
 <template>
   <div class="indexPage">
     <!-- <el-h1 class="custom-h1">欢迎使用本系统</el-h1> -->
+    <div id="guanli">
+      <el-button type="primary" icon="User" @click="adminlogin">管理员登录</el-button>
+    </div>
     <div class="chaxun">
       <el-text type="primary" style="font-size: 36px;">欢迎使用本系统</el-text>
-      <el-form :model="form" label-width="120px" style="marginTop:30px" id="myform">
+      <el-form label-width="120px" style="marginTop:30px">
         <el-form-item label="选择日期">
         <el-date-picker
             v-model="form.date"
@@ -33,7 +36,7 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <div style="text-align: center;padding-top: 20px; position: relative;">
+          <div style="text-align: center;padding-top: 20px; position: relative;left: 20%;">
             <el-button type="primary" @click="submit">提交</el-button>
             <el-button>取消</el-button>
           </div>
@@ -100,12 +103,17 @@ export default {
         }         
       });
     }
+    function adminlogin() {
+          // 点击按钮，转到管理员登录页面
+          instance.proxy.$router.push({ path: "/adminLogin" });
+    }
     return {
       form,
       count,
       guestCount,
       click,
-      submit
+      submit,
+      adminlogin
     };
   },
 };
@@ -122,11 +130,17 @@ export default {
   left: 0px; 
   background-image: url("../assets/images/basketball-g2ffdbc9b8_1920.jpg");
 }
+#guanli {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 10px;
+}
 .chaxun{
   padding-top: 20px;
   border-radius:10px;
   margin: 150px auto 0;
-  width: 40%;
+  width: 30%;
   height: 320px;
   background-color: rgba(255, 255, 255, 0.918);
   padding: 20px;
