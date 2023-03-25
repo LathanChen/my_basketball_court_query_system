@@ -36,10 +36,16 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <div style="text-align: center;padding-top: 20px; position: relative;left: 20%;">
-            <el-button type="primary" @click="submit">提交</el-button>
-            <el-button>取消</el-button>
-          </div>
+          <el-row>
+            <el-col :span="1">
+              <el-button type="primary" @click="submit">提交</el-button>
+            </el-col>
+            <el-col :span="22">
+            </el-col>
+            <el-col :span="1">
+              <el-button>取消</el-button>
+            </el-col>
+          </el-row>
         </el-form-item>
         <!-- <el-form-item>
           <el-button type="success" @click="click">登录</el-button>
@@ -153,7 +159,7 @@ export default {
   border-radius:10px;
   margin: 150px auto 0;
   width: 30%;
-  height: 320px;
+  height: 280px;
   background-color: rgba(255, 255, 255, 0.918);
   padding: 20px;
 }

@@ -23,8 +23,9 @@
             </el-form-item>
             <el-form-item label="时间段">
               <el-select
-                v-model="form.region"
-                placeholder="please select your zone"
+                v-model="form.shijianduan"
+                placeholder="请选择时间段"
+                ref="sjdSelect"
               >
                 <el-option label="上午" value=1 />
                 <el-option label="下午" value=2 />
@@ -34,19 +35,21 @@
             <el-form-item label="开始时间">
               <el-time-select
                 v-model="form.ks_shijian"
-                placeholder="Start time"
-                start="08:30"
+                placeholder="开始时间"
+                :start="ks_shijian_from"
                 step="00:15"
-                end="22:00"
+                :end="js_shijian_from"
+                :disabled="ks_shijian"
               />
             </el-form-item>
             <el-form-item label="结束时间">
               <el-time-select
                 v-model="form.js_shijian"
-                placeholder="Start time"
-                start="08:30"
+                placeholder="结束时间"
+                :start="ks_shijian_end"
                 step="00:15"
-                end="22:00"
+                :end="js_shijian_end"
+                :disabled="js_shijian"
               />
             </el-form-item>
 
@@ -94,7 +97,7 @@
               </el-col>
               <el-col :span="16">
                 <el-form-item>
-                  <el-button>取消</el-button>
+                  <el-button @click="test">取消</el-button>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -106,7 +109,7 @@
   </div>
 </template>
 <script>
-import { getCurrentInstance, reactive, inject } from "vue";
+import { getCurrentInstance,ref,reactive, inject, watch, } from "vue";
 
 export default {
   name: "inputInfo",
@@ -145,6 +148,113 @@ export default {
       js_shijian: "",
       shijian: "",
     });
+    let ks_shijian_from = ref('08:30')
+    let js_shijian_from = ref('12:00')
+    let ks_shijian_end = ref('08:30')
+    let js_shijian_end = ref('12:00')
+    let ks_shijian = ref(true)
+    let js_shijian = ref(true)
+
+    // 监视form的shijianduan属性，这里watch方法的第一个参数必须写成一个函数，并且要开启深度监视
+      // 原因：在Vue 3中，watch函数的第一个参数可以是一个函数，也可以是一个响应式对象或一个ref。如果第一个参数是一个响应式对象或一个ref，Vue 3会自动将其转换成一个getter函数，然后使用该函数来获取属性的值进行监视。因此，如果我们需要监视一个响应式对象或一个ref的属性，可以直接将其作为第一个参数传递给watch函数。
+      // 但是，如果我们想要监视一个属性的派生值，就需要将第一个参数写成一个函数。因为在这种情况下，我们需要在函数中定义派生值的计算逻辑，然后返回计算结果。watch函数会在初始化时调用该函数，然后监视该函数的返回值。只要返回值发生变化，watch函数就会调用回调函数。
+    watch(
+      () =>form.shijianduan,
+      (newvalue) =>{
+      // console.log(newvalue,oldvalue)
+      if (newvalue == 1){
+        form.ks_shijian = ''
+        form.js_shijian = ''
+        ks_shijian_from.value = '08:30'
+        ks_shijian_end.value = '12:00'
+        js_shijian_from.value = '11:30'
+        // const [hours, minutes] = form.ks_shijian.split(':'); // 将字符串拆分成小时和分钟
+        // const dateObject = new Date(); // 创建一个日期对象
+        // dateObject.setHours(hours); // 设置日期对象的小时
+        // dateObject.setMinutes(minutes); // 设置日期对象的分钟
+        // dateObject.setMinutes(dateObject.getMinutes() + 30); // 加上 30 分钟
+        // ks_shijian_end.value = dateObject.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        js_shijian_end.value = '12:00'
+        ks_shijian.value = false
+        js_shijian.value = true
+      }
+      else if (newvalue == 2){
+        form.ks_shijian = ''
+        form.js_shijian = ''
+        ks_shijian_from.value = '12:30'
+        js_shijian_from.value = '18:00'
+        ks_shijian_end.value = '12:30'
+        js_shijian_end.value = '18:00'
+        ks_shijian.value = false
+        js_shijian.value = true
+      }
+      else if (newvalue == 3){
+        form.ks_shijian = ''
+        form.js_shijian = ''
+        ks_shijian_from.value = '18:30'
+        js_shijian_from.value = '22:00'
+        ks_shijian_end.value = '18:30'
+        js_shijian_end.value = '22:00'
+        ks_shijian.value = false
+        js_shijian.value = true
+      }
+      // else if (newvalue == 2){
+      //   ks_shijian.value = '12:30'
+      //   js_shijian.value = '15:00'
+      // }
+      // else if (newvalue == 3){
+      //   ks_shijian.value = '18:00'
+      //   js_shijian.value = '22:00'
+      // }
+    },
+    {
+      deep:true
+    })
+
+    watch(
+      () =>form.ks_shijian,
+      (newvalue) =>{
+        if (newvalue <= form.js_shijian||form.js_shijian == ''){
+        form.ks_shijian = newvalue
+        const [hours, minutes] = form.ks_shijian.split(':'); // 将字符串拆分成小时和分钟
+        // console.log(form.ks_shijian)
+        const dateObject = new Date(); // 创建一个日期对象
+        dateObject.setHours(hours); // 设置日期对象的小时
+        dateObject.setMinutes(minutes); // 设置日期对象的分钟
+        dateObject.setMinutes(dateObject.getMinutes() + 30); // 加上 30 分钟
+        ks_shijian_end.value = dateObject.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+          if(newvalue == ''){
+            js_shijian.value = true
+          }
+          else{
+            js_shijian.value = false
+          }       
+        }
+        else{
+          // ks_shijian_from.value = js_shijian_from.value
+          // alert("开始时间不能晚于结束时间！")
+        }
+      },
+      {
+      deep:true
+    }
+    )
+    // watch(
+    //   () =>form.js_shijian,
+    //   (newvalue) =>{
+    //     if (newvalue >= form.ks_shijian||form.ks_shijian==''){
+    //       form.js_shijian = newvalue
+    //     }
+    //     else{
+    //       alert("结束时间不能早于开始时间！")
+    //       newvalue = ''
+    //     }
+    //   },
+    //   {
+    //   deep:true
+    // }
+    // )
+
     function back() {
       instance.proxy.$router.go(-1);
     }
@@ -158,11 +268,21 @@ export default {
         }
       });
     }
+    function test() {
+      console.log(form.ks_shijian)
+    }
     return {
       form,
       back,
       login,
-      listvalues
+      listvalues,
+      ks_shijian_from,
+      js_shijian_from,
+      ks_shijian_end,
+      js_shijian_end,
+      test,
+      ks_shijian,
+      js_shijian
     };
   },
 };
