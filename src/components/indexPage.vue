@@ -58,7 +58,7 @@
 
 <script>
 import { computed, reactive,ref,inject,getCurrentInstance } from "vue";
-import { useStore } from 'vuex';
+// import { useStore } from 'vuex';
 // import { ElH1, ElH2, ElH3} from "element-plus";
 
 export default {
@@ -68,7 +68,7 @@ export default {
   },
   setup() {
     const count = ref(0)
-    const store = useStore();
+    // const store = useStore();
     const instance = getCurrentInstance();
     const guestCount = computed(() =>{
       return `您是访问本网站的第${count.value}个用户`
@@ -83,11 +83,23 @@ export default {
       // console.log(form);
       axios.post('/api/form-data',form)
       .then(response => {
-        console.log(response.data)
-        store.state.mylist = response.data
+        // console.log(response.data)
+        // -------------------------------------------------------------------
+        // 使用VueX的写法，将后台查询到的数据存到VueX中，在下个组件中直接读取
+        // store.state.mylist = response.data
+        // -------------------------------------------------------------------
+
+        // 将返回的数据转化为JSON格式,也就是字符串
+        const data = JSON.stringify(response.data)
+        // 将字符串保存在query对象的date属性中
+        const query = {
+          data:data}
+        console.log(data)
         // console.log(store.state.mylist)
         instance.proxy.$router.push({ 
         name: 'infoPage',
+        // 发送路由导航的同时,将查询到的数据发送到下一个路由组件
+        query:query  
         })
       })
       // .catch(error => {

@@ -40,7 +40,7 @@ export default {
     function login(){
       axios.post('/api/adminlogin',form)
       .then(response => {
-        console.log(response.data)
+        // console.log(response.data)
         if(response.data){
           instance.proxy.$router.push({ 
         path: 'inputInfo',

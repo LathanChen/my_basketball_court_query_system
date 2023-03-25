@@ -94,7 +94,14 @@
 </template>
 <script>
 import { getCurrentInstance } from "vue";
-import { useStore } from 'vuex';
+// import { useStore } from 'vuex';
+
+// ---------------------------------------------------------------
+// 在 Vue 3 中，useRoute 和 instance.proxy.$router 都是用于获取当前路由信息的 API，但是它们的功能有所不同。
+// useRoute 是一个 Vue 3 中的 Composition API，用于在组件内部获取当前路由的信息。通过调用 useRoute 函数，你可以获得一个包含当前路由信息的响应式对象，
+import { useRoute } from "vue-router";
+// ---------------------------------------------------------------
+
 // import { ElH1, ElH2, ElH3} from "element-plus";
 // 这个页面要展示数据库查询的结果，思考了一下，有几个难点：
 // 1、查询如果包含多条结果，使用element中的元素标签，应该怎么迭代展示？
@@ -107,19 +114,37 @@ export default {
   //   console.log(this.$route.params.data);
   // },
   setup() {
-    const store = useStore();
+    // 获取VueX实例对象
+    // const store = useStore();
     const instance = getCurrentInstance();
     // console.log(instance.proxy.$route.meta);
-    const myData = store.state.mylist.courtList;
-    // console.log(myData)
-    const courtNums = store.state.mylist.courtNums;
+
+    // -------------------------------------------------------------------
+    // 使用VueX的写法，将前一个组件查询到的数据存到VueX中，并在这里读取
+    // const myData = store.state.mylist.courtList;
+    // const courtNums = store.state.mylist.courtNums;
+    // -------------------------------------------------------------------
+
+    // 获取组件的路由实例对象
+    const route = useRoute()
+    // 将上一个组件传递过来的参数转化为js对象
+    const data = JSON.parse(route.query.data)
+    const myData = data.courtList
+    const courtNums = data.courtNums
+    const xmnames = data.xiangmunames
+    // const courtNums = JSON.parse(route.query.courtNums)
+    // console.log(route.query.data)
+    // console.log(xmnames)
+
     function back() {
           instance.proxy.$router.push({ path: "/indexpage" })     
       }
     return {
       myData,
       courtNums,
-      back
+      back,
+      xmnames
+      // data,
     };
   },
 };

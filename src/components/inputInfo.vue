@@ -7,16 +7,18 @@
             <el-form-item label="场馆名">
               <el-select v-model="form.courtname" placeholder="请选择场馆">
                 <!-- 使用v-for，必须指定key的值，不然会报错 -->
-                <el-option v-for="(item,index) in courtnames.courtnames"
+                <el-option v-for="(item,index) in listvalues.courtnames"
             :key="index"
             :label="item"
             :value="item" />
               </el-select>
             </el-form-item>
             <el-form-item label="项目">
-              <el-select v-model="form.region" placeholder="请选择项目">
-                <el-option label="Zone one" value="shanghai" />
-                <el-option label="Zone two" value="beijing" />
+              <el-select v-model="form.xiangmu" placeholder="请选择项目">
+                <el-option v-for="(item,index) in listvalues.xiangmunames"
+            :key="index"
+            :label="item"
+            :value="item" />
               </el-select>
             </el-form-item>
             <el-form-item label="时间段">
@@ -24,15 +26,14 @@
                 v-model="form.region"
                 placeholder="please select your zone"
               >
-                <el-option label="Zone one" value="shanghai" />
-                <el-option label="Zone two" value="beijing" />
+                <el-option label="上午" value=1 />
+                <el-option label="下午" value=2 />
+                <el-option label="晚上" value=3 />
               </el-select>
             </el-form-item>
             <el-form-item label="开始时间">
               <el-time-select
-                v-model="startTime"
-                :max-time="endTime"
-                class="mr-4"
+                v-model="form.ks_shijian"
                 placeholder="Start time"
                 start="08:30"
                 step="00:15"
@@ -41,9 +42,7 @@
             </el-form-item>
             <el-form-item label="结束时间">
               <el-time-select
-                v-model="startTime"
-                :max-time="endTime"
-                class="mr-4"
+                v-model="form.js_shijian"
                 placeholder="Start time"
                 start="08:30"
                 step="00:15"
@@ -120,8 +119,10 @@ export default {
     next((inputInfo) =>{
       inputInfo.axios.get('/api/inputdata')
       .then(response => {
-        inputInfo.courtnames.courtnames = response.data.courtnames
+        inputInfo.listvalues.courtnames = response.data.courtnames
+        inputInfo.listvalues.xiangmunames = response.data.xiangmunames
         // console.log(inputInfo.courtnames.courtnames)
+        // console.log(inputInfo.courtnames.xiangmunames)
         })
       })
       .catch(error => {
@@ -132,7 +133,10 @@ export default {
     const instance = getCurrentInstance();
     const axios = inject("axios");
     // 不知道为什么,这里用于v-for循环的场地列表必须定义为一个对象,如果只定义为一个列表的话,下拉框就不会出现值
-    const courtnames = reactive({courtnames:[]});
+    const listvalues = reactive({
+      courtnames:[],
+      xiangmunames:[]
+    });
     const form = reactive({
       courtname: "",
       xiangmu: "",
@@ -158,7 +162,7 @@ export default {
       form,
       back,
       login,
-      courtnames
+      listvalues
     };
   },
 };

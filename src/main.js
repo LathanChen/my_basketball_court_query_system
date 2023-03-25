@@ -24,6 +24,12 @@ const router = createRouter({
     routes: [
       {
         path: '/indexpage',
+        // name是唯一的，不能取相同的名字
+        // name: 'indexPage',
+        component: indexPage
+      },
+      {
+        path: '/',
         name: 'indexPage',
         component: indexPage
       },
