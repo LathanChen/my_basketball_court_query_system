@@ -5,27 +5,53 @@
         <el-tab-pane label="新增信息" name="first">
           <el-form :model="form" label-width="80px">
             <el-form-item label="场馆名">
-              <el-select v-model="form.courtname" placeholder="请选择场馆">
+              <el-select v-model="form.cdbianhao" placeholder="请选择场馆">
                 <!-- 使用v-for，必须指定key的值，不然会报错 -->
-                <el-option v-for="(item,index) in listvalues.courtnames"
+                <el-option v-for="(item,index) in listvalues.courts"
             :key="index"
-            :label="item"
-            :value="item" />
+            :label="item.court_name"
+            :value="item.cdbianhao"/>
               </el-select>
             </el-form-item>
             <el-form-item label="项目">
-              <el-select v-model="form.xiangmu" placeholder="请选择项目">
+              <el-select v-model="form.xmbianhao" placeholder="请选择项目">
                 <el-option v-for="(item,index) in listvalues.xiangmunames"
             :key="index"
-            :label="item"
-            :value="item" />
+            :label="item.xmname"
+            :value="item.xmbianhao" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="周数">
+              <el-select
+                v-model="form.zhoushu"
+                placeholder="请选择周数"
+              >
+                <el-option label="第一周" value=1 />
+                <el-option label="第二周" value=2 />
+                <el-option label="第三周" value=3 />
+                <el-option label="第四周" value=4 />
+                <el-option label="第五周" value=5 />
+                <el-option label="每周" value=6 />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="星期数">
+              <el-select
+                v-model="form.zhouji"
+                placeholder="请选择星期数"
+              >
+                <el-option label="星期一" value=1 />
+                <el-option label="星期二" value=2 />
+                <el-option label="星期三" value=3 />
+                <el-option label="星期四" value=4 />
+                <el-option label="星期五" value=5 />
+                <el-option label="星期六" value=6 />
+                <el-option label="星期日" value=0 />
               </el-select>
             </el-form-item>
             <el-form-item label="时间段">
               <el-select
                 v-model="form.shijianduan"
                 placeholder="请选择时间段"
-                ref="sjdSelect"
               >
                 <el-option label="上午" value=1 />
                 <el-option label="下午" value=2 />
@@ -90,14 +116,14 @@
                 <el-form-item>
                   <el-popconfirm title="确认要添加吗">
                     <template #reference>
-                      <el-button type="primary">添加</el-button>
+                      <el-button type="primary" @click="insertInfo">添加</el-button>
                     </template>
                   </el-popconfirm>
                 </el-form-item>
               </el-col>
               <el-col :span="16">
                 <el-form-item>
-                  <el-button @click="test">取消</el-button>
+                  <el-button @click="back">取消</el-button>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -109,7 +135,7 @@
   </div>
 </template>
 <script>
-import { getCurrentInstance,ref,reactive, inject, watch, } from "vue";
+import { getCurrentInstance,ref,reactive, inject, watch, computed, toRefs,toRaw } from "vue";
 
 export default {
   name: "inputInfo",
@@ -122,9 +148,9 @@ export default {
     next((inputInfo) =>{
       inputInfo.axios.get('/api/inputdata')
       .then(response => {
-        inputInfo.listvalues.courtnames = response.data.courtnames
+        inputInfo.listvalues.courts = response.data.courts
         inputInfo.listvalues.xiangmunames = response.data.xiangmunames
-        // console.log(inputInfo.courtnames.courtnames)
+        console.log(inputInfo.listvalues.courts)
         // console.log(inputInfo.courtnames.xiangmunames)
         })
       })
@@ -137,17 +163,33 @@ export default {
     const axios = inject("axios");
     // 不知道为什么,这里用于v-for循环的场地列表必须定义为一个对象,如果只定义为一个列表的话,下拉框就不会出现值
     const listvalues = reactive({
-      courtnames:[],
-      xiangmunames:[]
+      courts:[],
+      xiangmunames:[],
+      deep:true
     });
     const form = reactive({
-      courtname: "",
-      xiangmu: "",
+      cdbianhao: "",
+      xmbianhao: "",
       shijianduan: "",
       ks_shijian: "",
       js_shijian: "",
-      shijian: "",
+      zhoushu:"",
+      zhouji:"",
     });
+    // 通过计算属性拼接网页输入的开始时间+结束时间
+    const shijian = computed(() =>{
+      return `${form.ks_shijian}-${form.js_shijian}`
+    })
+
+    // 重新创建一个新的对象formWithShijian，里面包含form对象的所有属性，并且加上了计算属性shijian
+    const formWithShijian = reactive({
+      // ES6展开运算符，将form对象的属性一一展开，合并上计算属性shijian后重新生成一个响应式对象formWithShijian
+      ...toRefs(form),
+      shijian
+    })
+
+    // const requestForm = toRaw(formWithShijian)
+
     let ks_shijian_from = ref('08:30')
     let js_shijian_from = ref('12:00')
     let ks_shijian_end = ref('08:30')
@@ -255,34 +297,33 @@ export default {
     // }
     // )
 
-    function back() {
-      instance.proxy.$router.go(-1);
-    }
-    function login() {
-      axios.post("/api/adminlogin", form).then((response) => {
-        console.log(response.data);
+    function insertInfo() {
+      axios.post("/api/insertinfo", toRaw(form)).then((response) => {
+        console.log(form)
         if (response.data) {
+          // alert('添加成功!')
           instance.proxy.$router.push({
             path: "hello",
           });
         }
       });
     }
-    function test() {
-      console.log(form.ks_shijian)
+    function back() {
+      console.log(form)
+      // instance.proxy.$router.push({ path: "/indexpage" });
     }
     return {
       form,
       back,
-      login,
+      insertInfo,
       listvalues,
       ks_shijian_from,
       js_shijian_from,
       ks_shijian_end,
       js_shijian_end,
-      test,
       ks_shijian,
-      js_shijian
+      js_shijian,
+      formWithShijian
     };
   },
 };
@@ -303,7 +344,7 @@ export default {
   border-radius: 10px;
   margin: 150px auto 0;
   width: 20%;
-  height: 350px;
+  height: 450px;
   background-color: rgba(255, 255, 255, 0.918);
   padding: 20px;
   position: relative;

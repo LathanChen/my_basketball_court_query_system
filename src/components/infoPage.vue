@@ -169,7 +169,7 @@ export default {
   padding-top: 20px;
   border-radius: 10px;
   margin: 150px auto 0;
-  width: 40%;
+  width: 30%;
   height: 320px;
   background-color: rgba(255, 255, 255, 0.918);
   padding: 20px;

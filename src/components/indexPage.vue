@@ -37,12 +37,12 @@
         </el-form-item>
         <el-form-item>
           <el-row>
-            <el-col :span="1">
+            <el-col :span="10">
               <el-button type="primary" @click="submit">提交</el-button>
             </el-col>
-            <el-col :span="22">
+            <el-col :span="12">
             </el-col>
-            <el-col :span="1">
+            <el-col :span="2">
               <el-button>取消</el-button>
             </el-col>
           </el-row>
