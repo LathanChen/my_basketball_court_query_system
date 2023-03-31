@@ -15,6 +15,7 @@
           返回
         </el-button>
       </div>
+    <div id="mingxi">
   <template v-for="item in myData" :key="item.bianhao">
   <el-descriptions
     class="margin-top"
@@ -69,6 +70,7 @@
     </el-descriptions-item>
   </el-descriptions>
 </template>
+</div>
       <!-- <el-descriptions title="场地信息" style="margin-top:15px">
         <el-descriptions-item>
           <span>
@@ -94,12 +96,12 @@
 </template>
 <script>
 import { getCurrentInstance } from "vue";
-// import { useStore } from 'vuex';
+import { useStore } from 'vuex';
 
 // ---------------------------------------------------------------
 // 在 Vue 3 中，useRoute 和 instance.proxy.$router 都是用于获取当前路由信息的 API，但是它们的功能有所不同。
 // useRoute 是一个 Vue 3 中的 Composition API，用于在组件内部获取当前路由的信息。通过调用 useRoute 函数，你可以获得一个包含当前路由信息的响应式对象，
-import { useRoute } from "vue-router";
+// import { useRoute } from "vue-router";
 // ---------------------------------------------------------------
 
 // import { ElH1, ElH2, ElH3} from "element-plus";
@@ -115,23 +117,24 @@ export default {
   // },
   setup() {
     // 获取VueX实例对象
-    // const store = useStore();
+    const store = useStore();
     const instance = getCurrentInstance();
     // console.log(instance.proxy.$route.meta);
 
     // -------------------------------------------------------------------
     // 使用VueX的写法，将前一个组件查询到的数据存到VueX中，并在这里读取
-    // const myData = store.state.mylist.courtList;
-    // const courtNums = store.state.mylist.courtNums;
+    const myData = store.state.mylist.courtList;
+    const courtNums = store.state.mylist.courtNums;
+    const xmnames = store.state.mylist.xiangmunames;
     // -------------------------------------------------------------------
 
     // 获取组件的路由实例对象
-    const route = useRoute()
+    // const route = useRoute()
     // 将上一个组件传递过来的参数转化为js对象
-    const data = JSON.parse(route.query.data)
-    const myData = data.courtList
-    const courtNums = data.courtNums
-    const xmnames = data.xiangmunames
+    // const data = JSON.parse(route.query.data)
+    // const myData = data.courtList
+    // const courtNums = data.courtNums
+    // const xmnames = data.xiangmunames
     // const courtNums = JSON.parse(route.query.courtNums)
     // console.log(route.query.data)
     // console.log(xmnames)
@@ -169,11 +172,18 @@ export default {
   padding-top: 20px;
   border-radius: 10px;
   margin: 150px auto 0;
-  width: 30%;
-  height: 320px;
+  width: 37%;
+  height: 45%;
   background-color: rgba(255, 255, 255, 0.918);
   padding: 20px;
   position: relative;
+}
+#mingxi {
+  height: 100%;
+  overflow: auto
+}
+.cell-item {
+  white-space: nowrap;
 }
 .my-descriptions {
   background-color: #a09d9c1a;
