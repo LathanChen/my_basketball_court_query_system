@@ -8,18 +8,16 @@
         <el-form-item label="密码">
           <el-input type="password" v-model="form.password" class="input" />
         </el-form-item>
-        <el-form-item>
-          <div style="position: relative;left: 20%;margin: 5px">
-            <el-button type="success" @click="login">登录</el-button>
-            <el-button @click="back">取消</el-button>
-          </div>
-        </el-form-item>
       </el-form>
+      <div style="display: flex; justify-content: center; align-items: center;margin-top: 30px;">
+        <el-button type="success" @click="login">登录</el-button>
+        <el-button @click="back">取消</el-button>
+      </div>
     </div>
   </div>
 </template>
 <script>
-import { getCurrentInstance, reactive,inject } from "vue";
+import { getCurrentInstance, reactive, inject } from "vue";
 
 export default {
   name: "indexPage",
@@ -28,30 +26,29 @@ export default {
   //   console.log(this.$route.params.data);
   // },
   setup() {
-    const instance = getCurrentInstance()
-    const axios = inject('axios')
+    const instance = getCurrentInstance();
+    const axios = inject("axios");
     const form = reactive({
       id: "",
       password: "",
     });
-    function back(){
-      instance.proxy.$router.go(-1)
+    function back() {
+      instance.proxy.$router.go(-1);
     }
-    function login(){
-      axios.post('/api/adminlogin',form)
-      .then(response => {
+    function login() {
+      axios.post("/api/adminlogin", form).then((response) => {
         // console.log(response.data)
-        if(response.data){
-          instance.proxy.$router.push({ 
-        path: 'inputInfo',
-        })
-        }       
-      })
+        if (response.data) {
+          instance.proxy.$router.push({
+            path: "inputInfo",
+          });
+        }
+      });
     }
     return {
       form,
       back,
-      login
+      login,
     };
   },
 };
@@ -70,20 +67,21 @@ export default {
 .formdiv {
   padding-top: 20px;
   border-radius: 10px;
-  margin: 270px auto;
-  width: 20%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -65%);
+  width: 300px;
   height: 150px;
   background-color: rgba(255, 255, 255, 0.918);
   padding: 20px;
   /* position: relative;是CSS中用于设置元素定位的属性之一。当一个元素被设置为相对定位时，它会相对于其在文档流中的原始位置进行定位，即元素的位置会相对于其正常位置发生偏移，但并不会脱离文档流，也不会影响其他元素的位置。 */
-  position: relative;
 }
 .form {
   /* position: absolute;是CSS中用于设置元素定位的属性之一。当一个元素被设置为绝对定位时，它会相对于其最近的定位祖先元素进行定位，而不考虑元素在文档流中的位置，即元素会脱离文档流，可以自由地设置其位置和尺寸，同时它的位置也不会影响其他元素的布局。 */
-  position: absolute;
-  left: 20%;
-  right: 20%;
-  top: 20%;
+  /* position: absolute; */
+  margin: 0 auto;
+  width: 80%;
 }
 /* .el-input {
   width: 50%;

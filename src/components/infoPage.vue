@@ -172,7 +172,7 @@ export default {
   padding-top: 20px;
   border-radius: 10px;
   margin: 150px auto 0;
-  width: 37%;
+  width: 630px;
   height: 45%;
   background-color: rgba(255, 255, 255, 0.918);
   padding: 20px;
@@ -185,14 +185,5 @@ export default {
 .cell-item {
   white-space: nowrap;
 }
-.my-descriptions {
-  background-color: #a09d9c1a;
-  padding: 10px;
-  font-size: 16px;
-  color: #333;
-  margin-top: 20px;
-}
-.my-descriptions-item {
-  color: red;
-}
+
 </style>

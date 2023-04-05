@@ -62,6 +62,29 @@ const store = createStore({
       mylist:{}
   }}
 })
+
+// ----------------------------解决inputinfo页面缩放窗口时报ResizeObserver loop limit exceeded错误信息的问题----------------------------
+const debounce = (fn, delay) => {
+  let timer = null;
+  return function () {
+    let context = this;
+    let args = arguments;
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      fn.apply(context, args);
+    }, delay);
+  }
+}
+
+const _ResizeObserver = window.ResizeObserver;
+window.ResizeObserver = class ResizeObserver extends _ResizeObserver{
+  constructor(callback) {
+    callback = debounce(callback, 16);
+    super(callback);
+  }
+}
+// ----------------------------解决inputinfo页面缩放窗口时报ResizeObserver loop limit exceeded错误信息的问题----------------------------
+
 // createApp是Vue3的新写法，通过这个写法，可以不使用nuew Vue将应用程序挂载到指定的DOM上
 const app = createApp(App)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
