@@ -2,7 +2,7 @@
   <div class="indexPage">
     <div class="chaxun">
       <div>
-        <el-text type="primary" style="font-size: 20px">为您查询到{{courtNums}}条记录</el-text>
+        <el-text type="primary" style="font-size: 20px">为您查询到{{myData.list.total}}条记录</el-text>
       </div>
       <!-- element的描述列表组件 -->
       <!-- column：用于控制组件的列数 -->
@@ -16,7 +16,8 @@
         </el-button>
       </div>
     <div id="mingxi">
-  <template v-for="item in myData" :key="item.bianhao">
+  <template v-for="item in myData.list.list" :key="item.bianhao">
+    <!-- 这里border报红是vs code的问题 -->
   <el-descriptions
     class="margin-top"
     title="场地信息"
@@ -70,6 +71,19 @@
     </el-descriptions-item>
   </el-descriptions>
 </template>
+<div class="demonstration" style="height: 20%;margin-top: 3%;">
+  <!-- layout="->,prev, pager, next, jumper"中的 -> 表示靠右放置，必须放在layout属性的第一个 -->
+    <el-pagination
+      v-model:current-page="listset.pageNum"
+      v-model:page-size="listset.pageSize"
+      :disabled="disabled"
+      :background="background"
+      layout="->,prev, pager, next, jumper"
+      :total="myData.list.total"
+      @current-change="handlePageChange"
+    />
+  </div>
+  </div>
 </div>
       <!-- <el-descriptions title="场地信息" style="margin-top:15px">
         <el-descriptions-item>
@@ -92,10 +106,9 @@
         </el-descriptions-item>
       </el-descriptions> -->
     </div>
-  </div>
 </template>
 <script>
-import { getCurrentInstance } from "vue";
+import { getCurrentInstance,ref,inject, reactive } from "vue";
 import { useStore } from 'vuex';
 
 // ---------------------------------------------------------------
@@ -115,18 +128,42 @@ export default {
   // mounted() {
   //   console.log(this.$route.params.data);
   // },
+
+  // 钩子函数，组件加载完毕后执行一次ajax请求，获取第一页的明细内容，后面的内容由组件内的@current-change事件触发获取
+  mounted() {
+    // 获取本组件的实例
+    const { ctx } = getCurrentInstance();
+    ctx.getlist()
+  },
+
   setup() {
     // 获取VueX实例对象
     const store = useStore();
+    // 引入axios
+    const axios = inject("axios");
     const instance = getCurrentInstance();
     // console.log(instance.proxy.$route.meta);
 
     // -------------------------------------------------------------------
     // 使用VueX的写法，将前一个组件查询到的数据存到VueX中，并在这里读取
-    const myData = store.state.mylist.courtList;
-    const courtNums = store.state.mylist.courtNums;
-    const xmnames = store.state.mylist.xiangmunames;
+    const myData = reactive({
+      list:[]
+    })
+    const listset =  store.state.indexform
+    // 是否禁用分页	
+    const disabled = ref(false);
+    // 是否为分页按钮添加背景色	
+    const background = ref(true);
+    // 查询到的记录数量
+    // let courtNums = myData.list.total;
+    // const xmnames = store.state.mylist.xiangmunames;
     // -------------------------------------------------------------------
+
+    // function handleCurrentChange(){
+    //   pageNum = pageNum;
+    //   getUserList();
+    // }
+    
 
     // 获取组件的路由实例对象
     // const route = useRoute()
@@ -138,15 +175,41 @@ export default {
     // const courtNums = JSON.parse(route.query.courtNums)
     // console.log(route.query.data)
     // console.log(xmnames)
+    
+    function getlist() {
+      axios.post("/api/courts",listset).then((response) => {
+        // 将首页表格输入的数据储存到VueX中，便于分页功能的使用
+        // console.log(response.data)
+        // -------------------------------------------------------------------
+        // 使用VueX的写法，将后台查询到的数据存到VueX中，在下个组件中直接读取
+        myData.list = response.data
+        console.log(myData.list.total)
+    })
+  }
+
+  function handlePageChange(pageNum) {
+    // console.log(listset)
+    listset.pageNum = pageNum;
+    // console.log(listset)
+    getlist();
+    }
 
     function back() {
-          instance.proxy.$router.push({ path: "/indexpage" })     
+      instance.proxy.$router.push({ path: "/indexpage" })     
       }
     return {
       myData,
-      courtNums,
+      // courtNums,
       back,
-      xmnames
+      // xmnames,
+      // currentPage,
+      // pageSize,
+      disabled,
+      background,
+      getlist,
+      handlePageChange,
+      listset
+
       // data,
     };
   },
@@ -177,6 +240,7 @@ export default {
   background-color: rgba(255, 255, 255, 0.918);
   padding: 20px;
   position: relative;
+  overflow: hidden;
 }
 #mingxi {
   height: 100%;

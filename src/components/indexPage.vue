@@ -8,8 +8,11 @@
     </div>
     <div class="chaxun">
       <el-text type="primary" style="font-size: 36px">欢迎使用本系统</el-text>
-      <div style="margin-top: 30px;"></div>
-      <el-form label-width="120px" style="margintop: 30px">
+      <div style="margin-top: 30px"></div>
+      <el-form
+        label-width="120px"
+        style="margintop: 30px"
+      >
         <el-form-item label="选择日期">
           <el-date-picker
             v-model="form.date"
@@ -35,15 +38,23 @@
             placeholder="请选择您想查询的运动项目"
             style="width: 85%"
           >
-            <el-option label="篮球" value=1 />
-            <el-option label="排球" value=2 />
-            <el-option label="乒乓球" value=3 />
-            <el-option label="羽毛球" value=4 />
+            <el-option label="篮球" value="1" />
+            <el-option label="排球" value="2" />
+            <el-option label="乒乓球" value="3" />
+            <el-option label="羽毛球" value="4" />
           </el-select>
         </el-form-item>
-        <div style="display: flex; justify-content: center; align-items: center;margin-top: 30px;">
-            <el-button type="primary" @click="submit">提交</el-button>
-            <el-button>取消</el-button>
+        <div
+          style="
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 30px;
+          "
+        >
+          <el-button type="primary" @click="submit">提交</el-button>
+          <!-- <el-button type="primary">提交</el-button> -->
+          <el-button>取消</el-button>
         </div>
         <!-- <el-form-item>
           <el-button type="success" @click="click">登录</el-button>
@@ -83,6 +94,8 @@ export default {
       date: "",
       shijianduan: null,
       xmbianhao: null,
+      pageNum:1,
+      pageSize:5
     });
     const openVn = () => {
       ElMessage({
@@ -91,6 +104,26 @@ export default {
         ]),
       });
     };
+
+    // 新写法, 发送axios的get请求,获得分页信息和查询数据
+  //   function submitForm(){
+  //     if (
+  //       Object.values(form).includes(null) ||
+  //       Object.values(form).includes("")
+  //     ) {
+  //       openVn()
+  //     } 
+  //     else {
+  //       axios.get('/api/courts', {
+  //         params: {
+  //         pageSize: 100, // 参数
+  //       },
+  //         data: form 
+  //   })
+  //   }
+  // }
+
+    // 最初的写法,使用表单按钮发送post请求取得数据,但是没有分页功能
     function submit() {
       // console.log(form);
       if (
@@ -100,19 +133,22 @@ export default {
         openVn()
       } 
       else {
-      axios.post("/api/form-data", form).then((response) => {
-        // console.log(response.data)
+      // axios.post("/api/form-data", form).then((response) => {
+      axios.post("/api/courts",form).then(() => {
+        // 将首页表格输入的数据储存到VueX中，便于分页功能的使用
+        store.state.indexform = form;
+        // console.log(store.state.indexform)
         // -------------------------------------------------------------------
         // 使用VueX的写法，将后台查询到的数据存到VueX中，在下个组件中直接读取
-        store.state.mylist = response.data;
+        // store.state.mylist = response.data;
         // -------------------------------------------------------------------
 
         // 将返回的数据转化为JSON格式,也就是字符串
-        const data = JSON.stringify(response.data);
+        // const data = JSON.stringify(response.data);
         // 将字符串保存在query对象的date属性中
         // const query = {
         //   data:data}
-        console.log(data);
+        // console.log(data);
         // console.log(store.state.mylist)
         instance.proxy.$router.push({
           name: "infoPage",
@@ -186,10 +222,10 @@ export default {
 /* 适应窄屏幕 */
 @media (max-width: 600px) {
   .form-buttons {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
   /* .form-submit-button {
     margin-bottom: 10px;
   } */

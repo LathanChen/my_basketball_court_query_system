@@ -59,7 +59,10 @@ const router = createRouter({
 const store = createStore({
   state(){
     return{
-      mylist:{}
+      indexform:{
+      },
+      mylist:{
+      }
   }}
 })
 
