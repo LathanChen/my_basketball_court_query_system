@@ -73,13 +73,14 @@
 </template>
 <div class="demonstration" style="height: 20%;margin-top: 3%;">
   <!-- layout="->,prev, pager, next, jumper"中的 -> 表示靠右放置，必须放在layout属性的第一个 -->
+  <!-- :total="+myData.list.total"这里+号表示转化为number类型，不然会报警告 -->
     <el-pagination
       v-model:current-page="listset.pageNum"
       v-model:page-size="listset.pageSize"
       :disabled="disabled"
       :background="background"
       layout="->,prev, pager, next, jumper"
-      :total="myData.list.total"
+      :total="+myData.list.total"
       @current-change="handlePageChange"
     />
   </div>
@@ -113,7 +114,8 @@ import { useStore } from 'vuex';
 
 // ---------------------------------------------------------------
 // 在 Vue 3 中，useRoute 和 instance.proxy.$router 都是用于获取当前路由信息的 API，但是它们的功能有所不同。
-// useRoute 是一个 Vue 3 中的 Composition API，用于在组件内部获取当前路由的信息。通过调用 useRoute 函数，你可以获得一个包含当前路由信息的响应式对象，
+// useRoute 是一个 Vue 3 中的 Composition API，用于在组件内部获取当前路由的信息。通过调用 useRoute 函数，你可以获得一个包含当前路由信息的响应式对象
+// useRoute主要用于获取当前路由的信息，而$router主要用于路由导航。
 // import { useRoute } from "vue-router";
 // ---------------------------------------------------------------
 
@@ -123,7 +125,7 @@ import { useStore } from 'vuex';
 // 2、除了查询结果之外，还要返回查询到记录的数量，在不给Form对象增加额外属性的前提下，java后台应该怎么实现，使用Map作为返回对象也许是一个办法
 // import {Search,Edit,Check,Message,Star,Delete,} from "@element-plus/icons";
 export default {
-  name: "indexPage",
+  name: "infoPage",
   components: {},
   // mounted() {
   //   console.log(this.$route.params.data);
@@ -154,6 +156,7 @@ export default {
     const disabled = ref(false);
     // 是否为分页按钮添加背景色	
     const background = ref(true);
+    
     // 查询到的记录数量
     // let courtNums = myData.list.total;
     // const xmnames = store.state.mylist.xiangmunames;
@@ -183,7 +186,9 @@ export default {
         // -------------------------------------------------------------------
         // 使用VueX的写法，将后台查询到的数据存到VueX中，在下个组件中直接读取
         myData.list = response.data
-        console.log(myData.list.total)
+        let total = parseInt(response.data.total)
+        myData.list.total = total
+        // console.log(myData.list.total)
     })
   }
 
