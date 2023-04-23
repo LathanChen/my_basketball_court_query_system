@@ -81,9 +81,7 @@ const router = createRouter({
 // next(): 不会触发 beforeEach
 // next('/xxx') 或者 next({ path: '/xxx' }) 跳到不同的地址都会再次执行 router.beforeEach 钩子函数。
 router.beforeEach((to, from, next) => {
-  let token = localStorage.getItem('token')
-  console.log(token)
-  const excludedComponents = ['index', 'infoPage','adminLogin']
+  const excludedComponents = ['index', 'infoPage']
   // 如果没有token且访问的是不需要token的组件，放行
   if (excludedComponents.includes(to.name)) {
         next()
@@ -95,15 +93,18 @@ router.beforeEach((to, from, next) => {
   // } 
   // 有token的情况下
   else {
+    let token = localStorage.getItem('token')
+    // console.log(token)
     // 如果访问的是登录页面，清除token并允许访问
-    if (to.path == '/login' && token) {
+    if (to.path == '/Login') {
       localStorage.removeItem('token');
+      console.log(`token:${token}`)
       next()
     } else {     //如果访问的是其他页面，或者没有token,发送请求交给Java后台判定
-      console.log(token)
+      // console.log(token)
       axios.get(`/api/token/${token}`).then((response) => {
               if (response.data){
-                console.log(token)
+                // console.log(token)
                 next()
               }
               // token认证未通过，转到登录界面
@@ -127,7 +128,9 @@ const store = createStore({
       indexform:{
       },
       mylist:{
-      }
+      },
+      guestNum:{
+      },
   }}
 })
 

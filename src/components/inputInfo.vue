@@ -1,5 +1,10 @@
 <template>
   <div class="indexPage">
+    <div id="guanli">
+      <el-button type="primary" icon="User" @click="logout"
+        >登出</el-button
+      >
+    </div>
     <div class="chaxun" :style="{ width: cxdivwidth + '%' }">
       <!-- model-value指定最初默认打开的标签页 -->
       <el-tabs
@@ -9,8 +14,9 @@
         lazy="true"
       >
         <el-tab-pane label="新增信息" name="first">
-          <el-form :model="form" label-width="80px">
-            <el-form-item label="场馆名">
+          <el-form :model="form" label-width="80px" ref="insertForm">
+            <!-- 为了实现信息增加成功后，页面表单清除的效果，必须为表单的每一个项目增加prop属性，属性值必须和v-model绑定的属性名相同 -->
+            <el-form-item label="场馆名" prop="cdbianhao">
               <el-select v-model="form.cdbianhao" placeholder="请选择场馆">
                 <!-- 使用v-for，必须指定key的值，不然会报错 -->
                 <el-option
@@ -21,7 +27,7 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="项目">
+            <el-form-item label="项目" prop="xmbianhao">
               <el-select v-model="form.xmbianhao" placeholder="请选择项目">
                 <el-option
                   v-for="(item, index) in listvalues.xiangmunames"
@@ -31,7 +37,7 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="周数">
+            <el-form-item label="周数" prop="zhoushu">
               <el-select v-model="form.zhoushu" placeholder="请选择周数">
                 <el-option label="第一周" value="1" />
                 <el-option label="第二周" value="2" />
@@ -41,7 +47,7 @@
                 <el-option label="每周" value="6" />
               </el-select>
             </el-form-item>
-            <el-form-item label="星期数">
+            <el-form-item label="星期数" prop="zhouji">
               <el-select v-model="form.zhouji" placeholder="请选择星期数">
                 <el-option label="星期一" value="1" />
                 <el-option label="星期二" value="2" />
@@ -52,14 +58,14 @@
                 <el-option label="星期日" value="0" />
               </el-select>
             </el-form-item>
-            <el-form-item label="时间段">
+            <el-form-item label="时间段" prop="shijianduan">
               <el-select v-model="form.shijianduan" placeholder="请选择时间段">
                 <el-option label="上午" value="1" />
                 <el-option label="下午" value="2" />
                 <el-option label="晚上" value="3" />
               </el-select>
             </el-form-item>
-            <el-form-item label="开始时间">
+            <el-form-item label="开始时间" prop="ks_shijian">
               <el-time-select
                 v-model="form.ks_shijian"
                 placeholder="开始时间"
@@ -69,7 +75,7 @@
                 :disabled="ks_shijian"
               />
             </el-form-item>
-            <el-form-item label="结束时间">
+            <el-form-item label="结束时间" prop="js_shijian">
               <el-time-select
                 v-model="form.js_shijian"
                 placeholder="结束时间"
@@ -259,6 +265,19 @@
                   </template>
                 </el-table-column>
               </el-table>
+              <div style="height: 20%;margin-top: 3%;">
+              <!-- layout="->,prev, pager, next, jumper"中的 -> 表示靠右放置，必须放在layout属性的第一个 -->
+              <!-- :total="+myData.list.total"这里+号表示转化为number类型，不然会报警告 -->
+                <el-pagination
+                  v-model:current-page="editForm.pageNum"
+                  v-model:page-size="editForm.pageSize"
+                  :disabled="disabled"
+                  :background="background"
+                  layout="->,prev, pager, next, jumper"
+                  :total="+showAllCount"
+                  @current-change="handlePageChange"
+                />
+              </div>
             </div>
           </transition>
         </el-tab-pane>
@@ -276,8 +295,9 @@ import {
   computed,
   toRefs,
   toRaw,
+  h
 } from "vue";
-
+import { ElMessage } from "element-plus";
 // 引入第三方动画库
 import "animate.css";
 
@@ -320,14 +340,21 @@ export default {
     });
 
     // 这里必须写成对象形式，不然v-modle读不到数据
-    let editFormData = reactive({
+    const editFormData = reactive({
       array: [],
     });
 
+    // 修改信息标签，查询数据时的容器
     const editForm = reactive({
       cdbianhao: "",
       xmbianhao: "",
+      pageNum:1,
+      pageSize:6
     });
+    // 修改信息标签下，存储后台查询结果的对象
+    const editdatalist = reactive({
+      list:[]
+    })
     // 通过计算属性拼接网页输入的开始时间+结束时间
     const shijian = computed(() => {
       return `${form.ks_shijian}-${form.js_shijian}`;
@@ -345,6 +372,20 @@ export default {
     const editFormShow = ref(true);
 
     const cxButtonShow = ref(true);
+
+    // 给出提示信息时的容器
+    const mes = ref("")
+    
+    // 新增信息标签，整个表单el-form的引用，用于新增信息结束后清空页面上的表单，方便下次信息的填写
+    const insertForm = ref(null)
+
+    // 查询到的所有记录数
+    const showAllCount = ref(0)
+
+    // 是否禁用分页	
+    const disabled = ref(false);
+    // 是否为分页按钮添加背景色	
+    const background = ref(true);
 
     // const requestForm = toRaw(formWithShijian)
 
@@ -382,7 +423,8 @@ export default {
           js_shijian_end.value = "12:00";
           ks_shijian.value = false;
           js_shijian.value = true;
-        } else if (newvalue == 2) {
+        } 
+        else if (newvalue == 2) {
           form.ks_shijian = "";
           form.js_shijian = "";
           ks_shijian_from.value = "12:30";
@@ -391,7 +433,8 @@ export default {
           js_shijian_end.value = "18:00";
           ks_shijian.value = false;
           js_shijian.value = true;
-        } else if (newvalue == 3) {
+        } 
+        else if (newvalue == 3) {
           form.ks_shijian = "";
           form.js_shijian = "";
           ks_shijian_from.value = "18:30";
@@ -460,6 +503,14 @@ export default {
     // }
     // )
     
+    // 页面弹出提示时使用的函数
+    const openVn = () => {
+      ElMessage({
+        message: h("p", null, [
+          h("span", null, mes.value),
+        ]),
+      });
+    };
 
 
     function insertInfo() {
@@ -468,15 +519,22 @@ export default {
         console.log(form);
         if (response.data) {
           // alert('添加成功!')
-          instance.proxy.$router.push({
-            path: "hello",
-          });
+          // 清空页面表单内容
+          insertForm.value.resetFields();
+          mes.value = "添加成功"
+          openVn()
         }
       });
     }
     function back() {
       // console.log(form);
       instance.proxy.$router.push({ path: "/" });
+    }
+
+    function logout(){
+      instance.proxy.$router.push({
+            path: "Login",
+          })
     }
 
     // 创建页面上标签页的点击事件，当点击新增信息时div缩小，点击修改信息时div变大
@@ -499,7 +557,10 @@ export default {
     function showallEditArray(){
       axios.post("/api/editanddeleteinfo", toRaw(editForm)).then((response) => {
         // 使用foreach对数组进行循环
-        editFormData.array = response.data;
+        // console.log(response.data.total)
+        editFormData.array = response.data.list;
+        showAllCount.value = response.data.total
+        // 遍历editFormData.array数组。在遍历的过程中，对于每个元素，它会判断elementit.zhouji的值，然后根据不同的值，将elementit.zhouji_zw赋值为不同的中文字符串。
         editFormData.array.forEach((elementit) => {
           switch (elementit.zhouji) {
             case 1:
@@ -547,8 +608,15 @@ export default {
         });
         console.log(editFormData.array);
       });
-
     }
+
+    function handlePageChange(pageNum) {
+    // console.log(listset)
+    editForm.pageNum = pageNum;
+    // console.log(listset)
+    showallEditArray()
+    }
+
     function showall() {
       cxdivwidth.value = 50;
       editFormShow.value = !editFormShow.value;
@@ -592,6 +660,8 @@ export default {
       bianjimingxi,
       baocunmingxi,
       deletemingxi,
+      logout,
+      handlePageChange,
       listvalues,
       ks_shijian_from,
       js_shijian_from,
@@ -610,6 +680,11 @@ export default {
       cxButtonShow,
       editMingxi_ksshijian,
       editMingxidisplay,
+      insertForm,
+      editdatalist,
+      showAllCount,
+      disabled,
+      background
       // bianji,
       // showbaocun
     };
@@ -627,6 +702,12 @@ export default {
   left: 0px;
   background-image: url("../assets/images/basketball-g2ffdbc9b8_1920.jpg");
 }
+#guanli {
+  position: absolute;
+  top: 3%;
+  left: 1%;
+  /* padding: 10%; */
+}
 .chaxun {
   border-radius: 10px;
   position: absolute;
@@ -641,7 +722,7 @@ export default {
 #editMingxi {
   /* height: 300px;
   width: 600px; */
-  background-color: rgba(233, 24, 24, 0.918);
+  /* background-color: rgba(233, 24, 24, 0.918); */
 }
 
 /* .el-input {

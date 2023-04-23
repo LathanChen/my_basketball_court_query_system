@@ -71,7 +71,7 @@
     </el-descriptions-item>
   </el-descriptions>
 </template>
-<div class="demonstration" style="height: 20%;margin-top: 3%;">
+<div style="height: 20%;margin-top: 3%;">
   <!-- layout="->,prev, pager, next, jumper"中的 -> 表示靠右放置，必须放在layout属性的第一个 -->
   <!-- :total="+myData.list.total"这里+号表示转化为number类型，不然会报警告 -->
     <el-pagination
@@ -148,10 +148,11 @@ export default {
 
     // -------------------------------------------------------------------
     // 使用VueX的写法，将前一个组件查询到的数据存到VueX中，并在这里读取
+    const listset =  store.state.indexform
+    // 存储后台查询结果的对象
     const myData = reactive({
       list:[]
     })
-    const listset =  store.state.indexform
     // 是否禁用分页	
     const disabled = ref(false);
     // 是否为分页按钮添加背景色	
@@ -200,7 +201,7 @@ export default {
     }
 
     function back() {
-      instance.proxy.$router.push({ path: "/indexpage" })     
+      instance.proxy.$router.push({ path: "/" })     
       }
     return {
       myData,
