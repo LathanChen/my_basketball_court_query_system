@@ -476,7 +476,7 @@ export default {
     }
     function back() {
       // console.log(form);
-      instance.proxy.$router.push({ path: "/indexpage" });
+      instance.proxy.$router.push({ path: "/" });
     }
 
     // 创建页面上标签页的点击事件，当点击新增信息时div缩小，点击修改信息时div变大

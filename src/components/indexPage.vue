@@ -171,7 +171,7 @@ export default {
     }
     function adminlogin() {
       // 点击按钮，转到管理员登录页面
-      instance.proxy.$router.push({ path: "/adminLogin" });
+      instance.proxy.$router.push({ path: "/Login" });
     }
     return {
       form,

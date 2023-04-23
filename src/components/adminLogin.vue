@@ -1,9 +1,11 @@
 <template>
   <div class="indexPage">
     <div class="formdiv">
-      <el-form class="form">
-        <el-form-item label="账号">
-          <el-input v-model="form.id" class="input" />
+      <el-form class="form" 
+      label-position="right"
+      label-width="60px">
+        <el-form-item label="用户名">
+          <el-input v-model="form.username" class="input" />
         </el-form-item>
         <el-form-item label="密码">
           <el-input type="password" v-model="form.password" class="input" />
@@ -17,34 +19,66 @@
   </div>
 </template>
 <script>
-import { getCurrentInstance, reactive, inject } from "vue";
+// 导入了 Vue.js 中的 h 函数，以便在应用程序中使用它来创建虚拟 DOM 元素。
+import { getCurrentInstance, reactive,ref, inject,h,watch,onMounted } from "vue";
+import { ElMessage } from "element-plus";
+import { useRoute } from 'vue-router'
 
 export default {
-  name: "indexPage",
+  name: "adminLogin",
   components: {},
-  // mounted() {
-  //   console.log(this.$route.params.data);
-  // },
   setup() {
+    onMounted(() => {
+      if (currentData.value){
+      mes.value = currentData.value
+      openVn()
+      mes.value = ''
+      }
+    });
     const instance = getCurrentInstance();
     const axios = inject("axios");
     const form = reactive({
-      id: "",
+      username: "",
       password: "",
     });
+    // 获取当前路由信息
+    const route = useRoute()
+    // 将路由信息传递过来的值变为响应式的对象currentData
+    const currentData = ref(route.query.data)
+    // 监视值的变化
+    watch(() => route.query.data, (newVal) => {
+      currentData.value = newVal
+    })
     function back() {
-      instance.proxy.$router.go(-1);
+      instance.proxy.$router.push({ path: "/" });
     }
+
+    const mes = ref("")
     function login() {
       axios.post("/api/adminlogin", form).then((response) => {
-        // console.log(response.data)
-        if (response.data) {
+        // console.log(response.data.state)
+        if (response.data.state) {
+          // console.log(response.data.state)
+          localStorage.setItem('token', response.data.token);
+          console.log(localStorage.token)
           instance.proxy.$router.push({
             path: "inputInfo",
-          });
+          })
+        }
+        else{
+          // console.log(response.data.state)
+          mes.value = "用户名或密码有误，请重新输入"
+          openVn()
         }
       });
     }
+    const openVn = () => {
+      ElMessage({
+        message: h("p", null, [
+          h("span", null, mes.value),
+        ]),
+      });
+    };
     return {
       form,
       back,

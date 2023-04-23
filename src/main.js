@@ -22,15 +22,15 @@ const router = createRouter({
     // 使用History来管理路由历史记录，这样初始的网址中就不会出现#号，如http://localhost:8080/#/
     history: createWebHistory(),
     routes: [
-      {
-        path: '/indexpage',
-        // name是唯一的，不能取相同的名字
-        // name: 'indexPage',
-        component: indexPage
-      },
+      // {
+      //   path: '/indexpage',
+      //   // name是唯一的，不能取相同的名字
+      //   // name: 'indexPage',
+      //   component: indexPage
+      // },
       {
         path: '/',
-        name: 'indexPage',
+        name: 'index',
         component: indexPage
       },
       {
@@ -44,7 +44,7 @@ const router = createRouter({
         component: infoPage
       },
       {
-        path: '/adminLogin',
+        path: '/Login',
         name: 'adminLogin',
         component: adminLogin
       },
@@ -55,6 +55,71 @@ const router = createRouter({
         }
     ]
   })
+
+
+// async方法
+// router.beforeEach((to, from, next) => {
+//   const excludedComponents = ['index', 'infoPage']
+//   const token = localStorage.getItem('token')
+//   console.log(token)
+//   if (to.name !== 'adminLogin' && !excludedComponents.includes(to.name) && !token) {
+//     next({name:'adminLogin'})
+//   } 
+//   else {
+//     axios.get(`/api/token/${token}`).then((response) => {
+//       if (response.data){
+//         next()
+//       }})
+//       .catch(error => {
+//         console.log(error)
+//         next({name:'adminLogin'})
+//       })
+//     }
+//   })
+
+// 创建路由守卫，验证token，并使用async和await方式发送axios请求
+// next(): 不会触发 beforeEach
+// next('/xxx') 或者 next({ path: '/xxx' }) 跳到不同的地址都会再次执行 router.beforeEach 钩子函数。
+router.beforeEach((to, from, next) => {
+  let token = localStorage.getItem('token')
+  console.log(token)
+  const excludedComponents = ['index', 'infoPage','adminLogin']
+  // 如果没有token且访问的是不需要token的组件，放行
+  if (excludedComponents.includes(to.name)) {
+        next()
+      } 
+  // if (to.path != '/login' && !token) {
+  //   next({
+  //     path: '/login'
+  //   })
+  // } 
+  // 有token的情况下
+  else {
+    // 如果访问的是登录页面，清除token并允许访问
+    if (to.path == '/login' && token) {
+      localStorage.removeItem('token');
+      next()
+    } else {     //如果访问的是其他页面，或者没有token,发送请求交给Java后台判定
+      console.log(token)
+      axios.get(`/api/token/${token}`).then((response) => {
+              if (response.data){
+                console.log(token)
+                next()
+              }
+              // token认证未通过，转到登录界面
+            else {
+              // next(vm =>{
+              //   vm.msg.value = "有效期已过，请重新登录"
+              // })
+              next({
+                path: '/login',
+                query: { data:"您没有权限，请登录" }
+              })
+            }})
+    }
+  }
+})
+
 // 创建VueX仓库store实例
 const store = createStore({
   state(){
