@@ -13,6 +13,7 @@ import infoPage from './components/infoPage.vue'
 import HelloWorld from './components/HelloWorld.vue'
 import adminLogin from './components/adminLogin.vue'
 import inputInfo from './components/inputInfo.vue'
+import aaa from './components/aaa.vue'
 import { createStore } from 'vuex'
 // 设置反向代理，前端请求默认发送到 http://localhost:8081
 axios.defaults.baseURL = 'http://localhost:8081'
@@ -32,6 +33,7 @@ const router = createRouter({
         path: '/',
         name: 'index',
         component: indexPage
+        
       },
       {
         path: '/hello',
@@ -52,6 +54,11 @@ const router = createRouter({
         path: '/inputInfo',
         name: 'inputInfo',
         component: inputInfo
+        },
+      {
+        path: '/aaa',
+        name: 'aaa',
+        component: aaa
         }
     ]
   })
@@ -113,7 +120,7 @@ router.beforeEach((to, from, next) => {
               //   vm.msg.value = "有效期已过，请重新登录"
               // })
               next({
-                path: '/login',
+                path: '/Login',
                 query: { data:"您没有权限，请登录" }
               })
             }})
@@ -156,7 +163,7 @@ window.ResizeObserver = class ResizeObserver extends _ResizeObserver{
 }
 // ----------------------------解决inputinfo页面缩放窗口时报ResizeObserver loop limit exceeded错误信息的问题----------------------------
 
-// createApp是Vue3的新写法，通过这个写法，可以不使用nuew Vue将应用程序挂载到指定的DOM上
+// createApp是Vue3的新写法，通过这个写法，可以不使用new Vue将应用程序挂载到指定的DOM上
 const app = createApp(App)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)

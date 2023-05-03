@@ -181,7 +181,7 @@
                 tyo
               >
                 <!-- prop：用于指定数据对象中与表格列相对应的属性名,即绑定的数据对象editFormData.array的属性值 -->
-                <el-table-column>
+                <el-table-column label="周数">
                   <!-- #default="{ row }，el-table-column将数据显示在默认插槽，row为表格绑定的editFormData.array数组的第一个对象 -->
                   <template v-slot:default="{ row }">
                     <!-- 在row元素中增加edit属性，控制每行的可编辑状态 -->
@@ -197,7 +197,7 @@
                     <!-- <el-input v-model="row.zhoushu_zw" /> -->
                   </template>
                 </el-table-column>
-                <el-table-column>
+                <el-table-column label="星期数">
                   <!-- #default="{ row }，el-table-column将数据显示在默认插槽，row为表格绑定的editFormData.array数组的第一个对象 -->
                   <template v-slot:default="{ row }">
                     <el-select v-model="row.zhouji" placeholder="请选择星期数" :disabled="!row.edit">
@@ -223,9 +223,9 @@
                     /> -->                   
               <el-time-select
                 v-model="row.ks_shijian"
-                start="08:30"
+                :start="edit_ks_sj_from"
                 step="00:30"
-                end="22:00"
+                :end="edit_ks_sj_to"
                 :disabled="!row.edit"
               />
                   </template>
@@ -234,9 +234,10 @@
                   <template #default="{ row }">
               <el-time-select
                 v-model="row.js_shijian"
-                start="08:30"
+                :min-time="row.ks_shijian"
+                :start="edit_js_sj_from"
                 step="00:30"
-                end="22:00"
+                :end="edit_js_sj_to"
                 :disabled="!row.edit"
               />
                   </template>
@@ -252,7 +253,7 @@
                   <template v-slot:default="{ row }">
                     <!-- 通过按钮的click方法，为edit属性赋值，控制按钮的显示或隐藏，即同一行其他单元格的可编辑状态 -->
                     <el-button link type="primary" size="small" @click="bianjimingxi(row)" v-if="!row.edit">编辑</el-button>
-                    <el-popconfirm @confirm="baocunmingxi(row)" title="确认要保存吗" v-if="row.edit">
+                    <el-popconfirm @confirm="baocunmingxi(row)" @cancel="quxiaomingxi(row)" title="确认要保存吗" v-if="row.edit">
                     <template #reference>
                     <el-button link type="primary" size="small">保存</el-button>
                     </template>
@@ -262,6 +263,7 @@
                     <el-button link type="primary" size="small">删除</el-button>
                     </template>
                     </el-popconfirm>
+                    <el-button link type="primary" size="small" :disabled="!row.isCancel" @click="recoveryData">取消</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -387,6 +389,11 @@ export default {
     // 是否为分页按钮添加背景色	
     const background = ref(true);
 
+    // 控制编辑页面取消按钮的活性化
+    const isCancel = ref(true)
+
+    let beforeEditRow = reactive([])
+
     // const requestForm = toRaw(formWithShijian)
 
     let ks_shijian_from = ref("08:30");
@@ -399,6 +406,10 @@ export default {
     let editMingxi = ref(false);
     let editMingxi_ksshijian = ref("");
     let editMingxidisplay = ref(true);
+    let edit_ks_sj_from = ref("08:30");
+    let edit_js_sj_from = ref("09:00");
+    let edit_ks_sj_to = ref("21:30");
+    let edit_js_sj_to = ref("22:00");
 
 
     // 监视form的shijianduan属性，这里watch方法的第一个参数必须写成一个函数，并且要开启深度监视
@@ -461,6 +472,7 @@ export default {
     watch(
       () => form.ks_shijian,
       (newvalue) => {
+        console.log(newvalue)
         if (newvalue <= form.js_shijian || form.js_shijian == "") {
           form.ks_shijian = newvalue;
           const [hours, minutes] = form.ks_shijian.split(":"); // 将字符串拆分成小时和分钟
@@ -503,6 +515,60 @@ export default {
     // }
     // )
     
+    // watch(
+    //   // map() 方法返回一个新数组，数组中的元素为原始数组元素调用函数处理后的值。
+    //   // item代表数组中的每个元素
+    //   // 这里返回的新数组由原来数组中每个对象的ks_shijian组成
+    //   ()=>editFormData.array.map(item =>item.ks_shijian),
+    //   (newvalue,oldvalue) =>{
+    //     console.log(newvalue,oldvalue)
+    //   //   newvalue.forEach((item, index) => {
+    //   //   console.log(`item${index + 1} value changed: ${item.value}`)
+    //   // })
+    //   for (var i=0;i<=newvalue.length;i++){
+    //     if(newvalue[i] != oldvalue[i]) {
+    //       if(newvalue[i].indexOf(":") != -1) {
+    //     const [hours, minutes] = edit_ks_sj_from.value.split(":"); // 将字符串拆分成小时和分钟
+    //     const dateObject = new Date(); // 创建一个日期对象
+    //     if (hours < 12){
+    //       dateObject.setHours(hours); // 设置日期对象的小时
+    //       dateObject.setMinutes(minutes); // 设置日期对象的分钟
+    //       dateObject.setMinutes(dateObject.getMinutes() + 30); // 加上 30 分钟
+    //       edit_js_sj_from.value = dateObject.toLocaleTimeString([], {
+    //         hour: "2-digit",
+    //         minute: "2-digit",
+    //       });
+    //       edit_js_sj_to.value = "12:00"        
+    //     }
+    //     else if (hours < 18){
+    //       dateObject.setHours(hours); // 设置日期对象的小时
+    //       dateObject.setMinutes(minutes); // 设置日期对象的分钟
+    //       dateObject.setMinutes(dateObject.getMinutes() + 30); // 加上 30 分钟
+    //       edit_js_sj_from.value = dateObject.toLocaleTimeString([], {
+    //         hour: "2-digit",
+    //         minute: "2-digit",
+    //       });
+    //       edit_js_sj_to.value = "18:00"        
+    //     }
+    //     else if (hours < 22){
+    //       dateObject.setHours(hours); // 设置日期对象的小时
+    //       dateObject.setMinutes(minutes); // 设置日期对象的分钟
+    //       dateObject.setMinutes(dateObject.getMinutes() + 30); // 加上 30 分钟
+    //       edit_js_sj_from.value = dateObject.toLocaleTimeString([], {
+    //         hour: "2-digit",
+    //         minute: "2-digit",
+    //       });
+    //       edit_js_sj_to.value = "22:00"        
+    //     }
+    //   }
+    //     }
+    //   }
+
+    //    },
+    //    {
+    //     deep: true,
+    //   }
+    // )
     // 页面弹出提示时使用的函数
     const openVn = () => {
       ElMessage({
@@ -515,6 +581,13 @@ export default {
 
     function insertInfo() {
       // toRaw() 是 Vue.js 3 中的一个函数。它是一个全局函数，可用于将响应式对象转换为普通对象
+      for (var key in form) {
+        if (!form[key]){
+          mes.value = "信息不全，请输入完整内容！"
+          openVn()
+          return
+      }
+    }
       axios.post("/api/insertinfo", toRaw(form)).then((response) => {
         console.log(form);
         if (response.data) {
@@ -557,7 +630,7 @@ export default {
     function showallEditArray(){
       axios.post("/api/editanddeleteinfo", toRaw(editForm)).then((response) => {
         // 使用foreach对数组进行循环
-        // console.log(response.data.total)
+        // console.log(response.data.list)
         editFormData.array = response.data.list;
         showAllCount.value = response.data.total
         // 遍历editFormData.array数组。在遍历的过程中，对于每个元素，它会判断elementit.zhouji的值，然后根据不同的值，将elementit.zhouji_zw赋值为不同的中文字符串。
@@ -606,7 +679,7 @@ export default {
               break;
           }
         });
-        console.log(editFormData.array);
+        // console.log(editFormData.array);
       });
     }
 
@@ -626,16 +699,64 @@ export default {
     }
 
     function bianjimingxi(row){
+        // 通过将数组转化为JSON字符串再转化回来，将这个由对象组成的数组深度拷贝
+        beforeEditRow = JSON.parse(JSON.stringify(editFormData.array));
+        // 使用展开运算符，由于是对象组成的数组，只会进行浅拷贝
+        // beforeEditRow = [...editFormData.array]
+        console.log(editFormData.array)
+        // 当前行明细可编辑
         row.edit = true
+        // 取消按钮激活
+        row.isCancel = !row.isCancel
+        // 分页按钮取消激活
+        disabled.value = true
         // showbaocun.value = !showbaocun.value
         // bianji.value = !bianji.value    
       }
 
     function baocunmingxi(row){
+      let nKs_shijian = parseInt(row.ks_shijian.replace(":", ""))
+      let nJs_shijian = parseInt(row.js_shijian.replace(":", ""))
+      if (nKs_shijian<nJs_shijian){
+        row.edit = false
+        axios.post("/api/editinfo", toRaw(row)).then((rensponse) =>{
+          if(rensponse.data){
+            mes.value = "信息修改成功！"
+            openVn()
+            row.isCancel = false
+            // 分页按钮激活
+            disabled.value = false
+          }
+          else{
+            mes.value = "信息修改失败！"
+            openVn()
+          }
+        })
+      }
+      else {
+        mes.value = "开始时间必须早于结束时间，请重新输入！"
+            openVn()
+      }
+        // showbaocun.value = !showbaocun.value
+        // bianji.value = !bianji.value 
+      }
+      
+    function quxiaomingxi(row){
       row.edit = false
         // showbaocun.value = !showbaocun.value
         // bianji.value = !bianji.value 
-        axios.post("/api/editinfo", toRaw(row))
+      }
+
+    function recoveryData(row){
+      // console.log(beforeEditRow)
+      editFormData.array = beforeEditRow
+      // console.log(beforeEditRow)
+      row.edit = false
+      row.isCancel = false
+      // 分页按钮激活
+      disabled.value = false
+        // showbaocun.value = !showbaocun.value
+        // bianji.value = !bianji.value 
       }
 
     function deletemingxi(row){
@@ -646,6 +767,8 @@ export default {
           if(rensponse.data == true){
             console.log(rensponse.data)
             showallEditArray()
+            mes.value = "删除成功！"
+            openVn()
           }
         })
       }
@@ -659,9 +782,11 @@ export default {
       tabClick,
       bianjimingxi,
       baocunmingxi,
+      quxiaomingxi,
       deletemingxi,
       logout,
       handlePageChange,
+      recoveryData,
       listvalues,
       ks_shijian_from,
       js_shijian_from,
@@ -684,7 +809,13 @@ export default {
       editdatalist,
       showAllCount,
       disabled,
-      background
+      background,
+      edit_ks_sj_from,
+      edit_ks_sj_to,
+      edit_js_sj_from,
+      edit_js_sj_to,
+      isCancel,
+      beforeEditRow
       // bianji,
       // showbaocun
     };
@@ -719,11 +850,11 @@ export default {
   background-color: rgba(255, 255, 255, 0.918);
   padding: 20px;
 }
-#editMingxi {
+/* #editMingxi { */
   /* height: 300px;
   width: 600px; */
   /* background-color: rgba(233, 24, 24, 0.918); */
-}
+/* } */
 
 /* .el-input {
   width: 50%;

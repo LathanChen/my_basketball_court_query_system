@@ -1,7 +1,7 @@
 <template>
   <div class="indexPage">
     <div class="chaxun">
-      <div>
+      <div style="display: flex; justify-content: center; align-items: center;">
         <el-text type="primary" style="font-size: 20px">为您查询到{{myData.list.total}}条记录</el-text>
       </div>
       <!-- element的描述列表组件 -->
