@@ -3,45 +3,45 @@
     <!-- <el-h1 class="custom-h1">欢迎使用本系统</el-h1> -->
     <div id="guanli">
       <el-button type="primary" icon="User" @click="adminlogin"
-        >管理员登录</el-button
+        >管理者ログイン</el-button
       >
     </div>
     <div class="chaxun">
-      <el-text type="primary" style="font-size: 36px">欢迎使用本系统</el-text>
+      <el-text type="primary" style="font-size: 36px">ようこそ</el-text>
       <div style="margin-top: 30px"></div>
       <el-form
         label-width="120px"
         style="margintop: 30px"
       >
-        <el-form-item label="选择日期">
+        <el-form-item label="日付">
           <el-date-picker
             v-model="form.date"
             type="date"
-            placeholder="选择日期"
+            placeholder="日付"
             style="width: 85%"
           />
         </el-form-item>
-        <el-form-item label="选择时间段">
+        <el-form-item label="期間">
           <el-select
             v-model="form.shijianduan"
-            placeholder="请选择您想查询的时间段"
+            placeholder="期間を選択してください"
             style="width: 85%"
           >
-            <el-option label="上午" value="1" />
-            <el-option label="下午" value="2" />
-            <el-option label="晚上" value="3" />
+            <el-option label="午前" value="1" />
+            <el-option label="午後" value="2" />
+            <el-option label="夜" value="3" />
           </el-select>
         </el-form-item>
-        <el-form-item label="选择项目">
+        <el-form-item label="運動種目">
           <el-select
             v-model="form.xmbianhao"
-            placeholder="请选择您想查询的运动项目"
+            placeholder="運動種目を選択してください"
             style="width: 85%"
           >
-            <el-option label="篮球" value="1" />
-            <el-option label="排球" value="2" />
-            <el-option label="乒乓球" value="3" />
-            <el-option label="羽毛球" value="4" />
+            <el-option label="バスケ" value="1" />
+            <el-option label="バレーボール" value="2" />
+            <el-option label="卓球" value="3" />
+            <el-option label="バドミントン" value="4" />
           </el-select>
         </el-form-item>
         <div
@@ -52,7 +52,7 @@
             margin-top: 30px;
           "
         >
-          <el-button type="primary" @click="submit">提交</el-button>
+          <el-button type="primary" @click="submit">確定</el-button>
           <!-- <el-button type="primary">提交</el-button> -->
           <el-button>取消</el-button>
         </div>

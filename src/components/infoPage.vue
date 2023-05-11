@@ -2,7 +2,7 @@
   <div class="indexPage">
     <div class="chaxun">
       <div style="display: flex; justify-content: center; align-items: center;">
-        <el-text type="primary" style="font-size: 20px">为您查询到{{myData.list.total}}条记录</el-text>
+        <el-text type="primary" style="font-size: 20px">{{myData.list.total}}つの情報があります</el-text>
       </div>
       <!-- element的描述列表组件 -->
       <!-- column：用于控制组件的列数 -->
@@ -12,7 +12,7 @@
           <el-icon>
             <ArrowLeft />
           </el-icon>
-          返回
+          戻る
         </el-button>
       </div>
     <div id="mingxi">
@@ -31,7 +31,7 @@
           <el-icon>
             <House />
           </el-icon>
-          地点
+          場所
         </div>
       </template>
     {{ item.court_name }}
@@ -42,7 +42,7 @@
           <el-icon>
             <Position />
           </el-icon>
-          距离
+          距離
         </div>
       </template>
       {{ item.juli }}km
@@ -64,7 +64,7 @@
           <el-icon>
             <office-building />
           </el-icon>
-          地址
+          住所
         </div>
       </template>
       {{ item.dizhi }}

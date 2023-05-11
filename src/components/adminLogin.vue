@@ -3,17 +3,17 @@
     <div class="formdiv">
       <el-form class="form" 
       label-position="right"
-      label-width="60px">
-        <el-form-item label="用户名">
+      label-width="90px">
+        <el-form-item label="ユーザーID">
           <el-input v-model="form.username" class="input" />
         </el-form-item>
-        <el-form-item label="密码">
+        <el-form-item label="パスワード">
           <el-input type="password" v-model="form.password" class="input" />
         </el-form-item>
       </el-form>
       <div style="display: flex; justify-content: center; align-items: center;margin-top: 30px;">
-        <el-button type="success" @click="login">登录</el-button>
-        <el-button @click="back">取消</el-button>
+        <el-button type="success" @click="login">ログイン</el-button>
+        <el-button @click="back">キャンセル</el-button>
       </div>
     </div>
   </div>

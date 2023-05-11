@@ -2,7 +2,7 @@
   <div class="indexPage">
     <div id="guanli">
       <el-button type="primary" icon="User" @click="logout"
-        >登出</el-button
+        >ログアウト</el-button
       >
     </div>
     <div class="chaxun" :style="{ width: cxdivwidth + '%' }">
@@ -13,10 +13,10 @@
         @tab-click="tabClick"
         lazy="true"
       >
-        <el-tab-pane label="新增信息" name="first">
-          <el-form :model="form" label-width="80px" ref="insertForm">
+        <el-tab-pane label="新規情報" name="first">
+          <el-form :model="form" label-width="90px" ref="insertForm">
             <!-- 为了实现信息增加成功后，页面表单清除的效果，必须为表单的每一个项目增加prop属性，属性值必须和v-model绑定的属性名相同 -->
-            <el-form-item label="场馆名" prop="cdbianhao">
+            <el-form-item label="場所" prop="cdbianhao">
               <el-select v-model="form.cdbianhao" placeholder="请选择场馆">
                 <!-- 使用v-for，必须指定key的值，不然会报错 -->
                 <el-option
@@ -28,7 +28,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label="项目" prop="xmbianhao">
-              <el-select v-model="form.xmbianhao" placeholder="请选择项目">
+              <el-select v-model="form.xmbianhao" placeholder="项目を選択してください">
                 <el-option
                   v-for="(item, index) in listvalues.xiangmunames"
                   :key="index"
@@ -37,48 +37,48 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="周数" prop="zhoushu">
-              <el-select v-model="form.zhoushu" placeholder="请选择周数">
-                <el-option label="第一周" value="1" />
-                <el-option label="第二周" value="2" />
-                <el-option label="第三周" value="3" />
-                <el-option label="第四周" value="4" />
-                <el-option label="第五周" value="5" />
-                <el-option label="每周" value="6" />
+            <el-form-item label="週数" prop="zhoushu">
+              <el-select v-model="form.zhoushu" placeholder="週数を選択してください">
+                <el-option label="第一週" value="1" />
+                <el-option label="第二週" value="2" />
+                <el-option label="第三週" value="3" />
+                <el-option label="第四週" value="4" />
+                <el-option label="第五週" value="5" />
+                <el-option label="每週" value="6" />
               </el-select>
             </el-form-item>
-            <el-form-item label="星期数" prop="zhouji">
-              <el-select v-model="form.zhouji" placeholder="请选择星期数">
-                <el-option label="星期一" value="1" />
-                <el-option label="星期二" value="2" />
-                <el-option label="星期三" value="3" />
-                <el-option label="星期四" value="4" />
-                <el-option label="星期五" value="5" />
-                <el-option label="星期六" value="6" />
-                <el-option label="星期日" value="0" />
+            <el-form-item label="曜日" prop="zhouji">
+              <el-select v-model="form.zhouji" placeholder="曜日を選択してください数">
+                <el-option label="月曜日" value="1" />
+                <el-option label="火曜日" value="2" />
+                <el-option label="水曜日" value="3" />
+                <el-option label="木曜日" value="4" />
+                <el-option label="金曜日" value="5" />
+                <el-option label="土曜日" value="6" />
+                <el-option label="日曜日" value="0" />
               </el-select>
             </el-form-item>
-            <el-form-item label="时间段" prop="shijianduan">
-              <el-select v-model="form.shijianduan" placeholder="请选择时间段">
-                <el-option label="上午" value="1" />
-                <el-option label="下午" value="2" />
-                <el-option label="晚上" value="3" />
+            <el-form-item label="期間" prop="shijianduan">
+              <el-select v-model="form.shijianduan" placeholder="期間を選択してください">
+                <el-option label="午前" value="1" />
+                <el-option label="午後" value="2" />
+                <el-option label="夜" value="3" />
               </el-select>
             </el-form-item>
-            <el-form-item label="开始时间" prop="ks_shijian">
+            <el-form-item label="开始時間" prop="ks_shijian">
               <el-time-select
                 v-model="form.ks_shijian"
-                placeholder="开始时间"
+                placeholder="开始時間"
                 :start="ks_shijian_from"
                 step="00:15"
                 :end="js_shijian_from"
                 :disabled="ks_shijian"
               />
             </el-form-item>
-            <el-form-item label="结束时间" prop="js_shijian">
+            <el-form-item label="終わり時間" prop="js_shijian">
               <el-time-select
                 v-model="form.js_shijian"
-                placeholder="结束时间"
+                placeholder="終わり時間"
                 :start="ks_shijian_end"
                 step="00:15"
                 :end="js_shijian_end"
@@ -124,7 +124,7 @@
                   <el-popconfirm @confirm="insertInfo" title="确认要添加吗">
                     <!-- <template #reference> 会创建一个匿名插槽，其中的内容将被插入到组件的默认插槽中,也就是把下面的el-button放入到el-popconfirm的默认插槽中 -->
                     <template #reference>
-                      <el-button type="primary">添加</el-button>
+                      <el-button type="primary">追加</el-button>
                     </template>
                   </el-popconfirm>
                 </el-form-item>
@@ -137,11 +137,11 @@
             </el-row>
           </el-form>
         </el-tab-pane>
-        <el-tab-pane label="修改信息" name="second">
+        <el-tab-pane label="情報変更" name="second">
           <!-- <button @click="show">{{ mingxi ? '显示明细' : '隐藏明细' }}</button> -->
           <el-form :model="editForm" label-width="80px" v-if="editFormShow">
-            <el-form-item label="场馆名">
-              <el-select v-model="editForm.cdbianhao" placeholder="请选择场馆">
+            <el-form-item label="場所">
+              <el-select v-model="editForm.cdbianhao" placeholder="場所を選択してください">
                 <!-- 使用v-for，必须指定key的值，不然会报错 -->
                 <el-option
                   v-for="(item, index) in listvalues.courts"
@@ -151,8 +151,8 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="项目">
-              <el-select v-model="editForm.xmbianhao" placeholder="请选择项目">
+            <el-form-item label="項目">
+              <el-select v-model="editForm.xmbianhao" placeholder="項目を選択してください">
                 <el-option
                   v-for="(item, index) in listvalues.xiangmunames"
                   :key="index"
@@ -181,37 +181,37 @@
                 tyo
               >
                 <!-- prop：用于指定数据对象中与表格列相对应的属性名,即绑定的数据对象editFormData.array的属性值 -->
-                <el-table-column label="周数">
+                <el-table-column label="週数">
                   <!-- #default="{ row }，el-table-column将数据显示在默认插槽，row为表格绑定的editFormData.array数组的第一个对象 -->
                   <template v-slot:default="{ row }">
                     <!-- 在row元素中增加edit属性，控制每行的可编辑状态 -->
                     <el-select v-model="row.zhoushu" :disabled="!row.edit">
                       <!-- 这里一定要使用:value="1"的方式，实现动态数据绑定，不然后台的row.zhoushu不会绑定到每一个选项中 -->
-                      <el-option label="第一周" :value="1" />
-                      <el-option label="第二周" :value="2" />
-                      <el-option label="第三周" :value="3" />
-                      <el-option label="第四周" :value="4" />
-                      <el-option label="第五周" :value="5" />
-                      <el-option label="每周" :value="6" />
+                      <el-option label="第一週" :value="1" />
+                      <el-option label="第二週" :value="2" />
+                      <el-option label="第三週" :value="3" />
+                      <el-option label="第四週" :value="4" />
+                      <el-option label="第五週" :value="5" />
+                      <el-option label="每週" :value="6" />
                     </el-select>
                     <!-- <el-input v-model="row.zhoushu_zw" /> -->
                   </template>
                 </el-table-column>
-                <el-table-column label="星期数">
+                <el-table-column label="曜日">
                   <!-- #default="{ row }，el-table-column将数据显示在默认插槽，row为表格绑定的editFormData.array数组的第一个对象 -->
                   <template v-slot:default="{ row }">
-                    <el-select v-model="row.zhouji" placeholder="请选择星期数" :disabled="!row.edit">
-                      <el-option label="周一" :value="1" />
-                      <el-option label="周二" :value="2" />
-                      <el-option label="周三" :value="3" />
-                      <el-option label="周四" :value="4" />
-                      <el-option label="周五" :value="5" />
-                      <el-option label="周六" :value="6" />
-                      <el-option label="周日" :value="0" />
+                    <el-select v-model="row.zhouji" placeholder="曜日を選択してください" :disabled="!row.edit">
+                      <el-option label="月曜日" :value="1" />
+                      <el-option label="火曜日" :value="2" />
+                      <el-option label="水曜日" :value="3" />
+                      <el-option label="木曜日" :value="4" />
+                      <el-option label="金曜日" :value="5" />
+                      <el-option label="土曜日" :value="6" />
+                      <el-option label="日曜日" :value="0" />
                     </el-select>
                   </template>
                 </el-table-column>
-                <el-table-column label="开始时间">
+                <el-table-column label="開始時間">
                   <template v-slot:default="{ row }">
                     <!-- <el-time-picker
                       v-model="row.ks_shijian"
@@ -230,7 +230,7 @@
               />
                   </template>
                 </el-table-column>
-                <el-table-column label="结束时间">
+                <el-table-column label="終わり時間">
                   <template #default="{ row }">
               <el-time-select
                 v-model="row.js_shijian"
@@ -247,7 +247,7 @@
                   label="结束时间"
                   width="120"
                 /> -->
-                <el-table-column fixed="right" label="操作选项">
+                <el-table-column fixed="right" label="オプション">
                   <!-- 可以写成下面这样，$index代表row对象在列表中的索引值
                   <template v-slot:default="{ row,$index }"> -->
                   <template v-slot:default="{ row }">
@@ -260,7 +260,7 @@
                     </el-popconfirm>
                     <el-popconfirm @confirm="deletemingxi(row)" title="确认要删除吗">
                     <template #reference>
-                    <el-button link type="primary" size="small">删除</el-button>
+                    <el-button link type="primary" size="small">削除</el-button>
                     </template>
                     </el-popconfirm>
                     <el-button link type="primary" size="small" :disabled="!row.isCancel" @click="recoveryData">取消</el-button>
